@@ -235,50 +235,51 @@
         #print-area { display: none; }
         @media print {
             @page { 
-                size: 58mm auto; 
+                size: 58mm 80mm; 
                 margin: 0; 
             }
             body { 
                 background: white; 
+                width: 58mm;
             }
             body > *:not(#print-area) { 
                 display: none !important; 
             }
             #print-area { 
                 display: block !important; 
-                width: 54mm; 
+                width: 56mm; 
                 margin: 0 auto; 
-                padding: 5px; 
+                padding: 4mm; 
                 font-family: 'Courier New', Courier, monospace; 
                 color: #000; 
                 text-align: center; 
                 background: white; 
             }
             .print-header { 
-                font-size: 13px; 
+                font-size: 12pt; 
                 font-weight: bold; 
                 border-bottom: 1px dashed #000; 
-                padding-bottom: 4px; 
-                margin-bottom: 8px; 
+                padding-bottom: 3mm; 
+                margin-bottom: 3mm; 
                 text-transform: uppercase;
             }
             .print-type { 
-                font-size: 13px; 
+                font-size: 11pt; 
                 font-weight: bold;
-                margin: 4px 0; 
+                margin: 2mm 0; 
             }
-            /* Ukuran nomor antrean diperbesar drastis agar pas di struk thermal */
+            /* Ukuran nomor antrean diperbesar menggunakan pt agar proporsional di semua HP */
             .print-number { 
-                font-size: 55px !important; 
+                font-size: 36pt !important; 
                 font-weight: bold !important; 
-                margin: 8px 0; 
+                margin: 4mm 0; 
                 line-height: 1; 
             }
             .print-footer { 
-                font-size: 11px; 
+                font-size: 9pt; 
                 border-top: 1px dashed #000; 
-                padding-top: 4px; 
-                margin-top: 8px; 
+                padding-top: 3mm; 
+                margin-top: 3mm; 
             }
         }
     </style>
