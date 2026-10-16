@@ -231,17 +231,55 @@
         .running-text { display: inline-block; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* --- PRINT STYLES --- */
+        /* --- PRINT STYLES (STRUK KERTAS THERMAL 58mm) --- */
         #print-area { display: none; }
         @media print {
-            @page { size: 58mm 100mm; margin: 0; }
-            body { background: white; }
-            body > *:not(#print-area) { display: none !important; }
-            #print-area { display: block !important; width: 55mm; margin: 0 auto; padding: 10px; font-family: 'Courier New', Courier, monospace; color: #000; text-align: center; background: white; }
-            .print-header { font-size: 14px; font-weight: bold; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase;}
-            .print-type { font-size: 12px; margin: 5px 0; }
-            .print-number { font-size: 40px; font-weight: bold; margin: 10px 0; line-height: 1; }
-            .print-footer { font-size: 10px; border-top: 1px dashed #000; padding-top: 5px; margin-top: 10px; }
+            @page { 
+                size: 58mm auto; 
+                margin: 0; 
+            }
+            body { 
+                background: white; 
+            }
+            body > *:not(#print-area) { 
+                display: none !important; 
+            }
+            #print-area { 
+                display: block !important; 
+                width: 54mm; 
+                margin: 0 auto; 
+                padding: 5px; 
+                font-family: 'Courier New', Courier, monospace; 
+                color: #000; 
+                text-align: center; 
+                background: white; 
+            }
+            .print-header { 
+                font-size: 13px; 
+                font-weight: bold; 
+                border-bottom: 1px dashed #000; 
+                padding-bottom: 4px; 
+                margin-bottom: 8px; 
+                text-transform: uppercase;
+            }
+            .print-type { 
+                font-size: 13px; 
+                font-weight: bold;
+                margin: 4px 0; 
+            }
+            /* Ukuran nomor antrean diperbesar drastis agar pas di struk thermal */
+            .print-number { 
+                font-size: 55px !important; 
+                font-weight: bold !important; 
+                margin: 8px 0; 
+                line-height: 1; 
+            }
+            .print-footer { 
+                font-size: 11px; 
+                border-top: 1px dashed #000; 
+                padding-top: 4px; 
+                margin-top: 8px; 
+            }
         }
     </style>
 </head>
