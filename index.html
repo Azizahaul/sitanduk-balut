@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiTANDUK - Dukcapil Balut</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Warna Adaptasi */
+            --primary-color: #0b457a;
+            --login-blue: #235add; /* Biru terang untuk form login */
+            --secondary-color: #0056b3; 
+            --accent-color: #e53935;
+            --bg-color: #f4f6f9;
+            --text-main: #333333;
+            --text-light: #ffffff;
+            
+            /* Warna Loket (Referensi Tab Admin Loket) */
+            --color-umum: #dc3545; /* Merah */
+            --color-khusus: #28a745; /* Hijau */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header-logo { display: flex; align-items: center; gap: 15px; }
+        .header-logo i { font-size: 2.5rem; }
+        .header-text h1 { font-size: 1.2rem; margin-bottom: 3px; text-transform: uppercase; }
+        .header-text p { font-size: 0.8rem; opacity: 0.8; }
+
+        /* --- NAVIGATION TABS --- */
+        .tabs {
+            display: flex;
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--primary-color); }
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Tombol Admin Loket di ujung kanan */
+        #btn-tab-admin {
+            margin-left: auto;
+            color: var(--primary-color);
+            border-left: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+        #btn-tab-admin.active {
+            background-color: #fff;
+            border-bottom-color: var(--primary-color);
+        }
+
+        .view-container {
+            display: none;
+            padding: 20px;
+            height: calc(100vh - 130px);
+            overflow-y: auto;
+            position: relative; /* Penting untuk overlay login */
+        }
+        .view-container.active { display: block; }
+
+        /* --- 1. WIDGET WEB --- */
+        .widget-wrapper { max-width: 350px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 0 15px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
+        .widget-header { background-color: var(--primary-color); color: white; padding: 12px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .widget-card { margin: 15px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; }
+        .w-card-header { padding: 10px; text-align: center; font-weight: bold; color: white; text-transform: uppercase; }
+        .w-card-header.umum { background-color: var(--color-umum); }
+        .w-card-header.khusus { background-color: var(--color-khusus); }
+        .w-card-body { background: #f9f9f9; padding: 15px; text-align: center; }
+        .w-current-number { font-size: 3rem; font-weight: bold; color: #333; margin: 10px 0; line-height: 1; }
+        .w-subtitle { font-size: 0.8rem; color: #777; margin-bottom: 15px; }
+        .w-divider { border-top: 2px dashed #ccc; margin: 15px 0; }
+        .w-stats { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; color: #555; }
+        .w-stats strong { color: #333; }
+
+        /* --- 2. KIOSK --- */
+        .kiosk-container { max-width: 600px; margin: 20px auto; text-align: center; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .kiosk-title { color: var(--primary-color); margin-bottom: 30px; font-size: 1.5rem; }
+        .btn-kiosk { display: flex; width: 100%; padding: 25px; margin-bottom: 20px; font-size: 1.5rem; font-weight: bold; color: white; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.2s; align-items: center; justify-content: center; gap: 15px; }
+        .btn-kiosk:hover { transform: translateY(-5px); }
+        .btn-kiosk.umum { background-color: var(--color-umum); }
+        .btn-kiosk.khusus { background-color: var(--color-khusus); }
+
+        /* --- 3. ADMIN (Gaya Card Sesuai Gambar) --- */
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; filter: blur(5px); pointer-events: none; transition: 0.3s; }
+        .admin-card { background: white; padding: 30px 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; border: 1px solid #ddd; position: relative; overflow: hidden; }
+        /* Garis warna di atas card */
+        .admin-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 6px; }
+        .admin-card.umum::before { background-color: var(--color-umum); }
+        .admin-card.khusus::before { background-color: var(--color-khusus); }
+        
+        .admin-card h3 { font-size: 1.1rem; color: #333; margin-bottom: 10px; }
+        .admin-number { font-size: 5rem; font-weight: bold; margin: 15px 0; color: #333; line-height: 1; }
+        
+        .btn-call { background-color: #cccccc; color: white; border: none; padding: 15px 20px; font-size: 1rem; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; transition: 0.2s; }
+        /* Tombol Panggil berubah warna jika aktif */
+        .btn-call:not(:disabled):hover { background-color: #a0a0a0; }
+        .btn-call:disabled { background-color: #e0e0e0; color: #a0a0a0; cursor: not-allowed; }
+
+        .admin-action-row { grid-column: 1 / -1; display:flex; gap:20px; margin-top:10px; }
+        .btn-reset-admin { flex:1; padding: 15px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-logout-admin { flex:1; padding: 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* --- OVERLAY LOGIN (Desain SiTANDUK) --- */
+        #login-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        
+        .login-wrapper {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 800px;
+            max-width: 95%;
+            overflow: hidden;
+            min-height: 450px;
+        }
+
+        /* Bagian Kiri (Biru) */
+        .login-left {
+            flex: 1;
+            background-color: var(--login-blue);
+            color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .ll-header { display: flex; align-items: center; gap: 10px; }
+        .ll-header i { font-size: 2rem; color: #ffd700; }
+        .ll-header-text { font-size: 0.8rem; line-height: 1.2; font-weight: 500; }
+        
+        .ll-center { text-align: center; margin: auto 0; }
+        /* Ilustrasi SVG Sederhana Pengganti Gambar */
+        .ll-illustration { width: 150px; margin: 0 auto 20px auto; opacity: 0.9; }
+        
+        .ll-title { font-size: 1.8rem; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px; }
+        .ll-desc { font-size: 0.8rem; opacity: 0.8; max-width: 80%; margin: 0 auto 15px auto; line-height: 1.4; }
+        .ll-badge { background: transparent; font-size: 0.75rem; color: #a5e0b5; display: inline-flex; align-items: center; gap: 5px; }
+        .ll-badge i { font-size: 0.5rem; color: #4ade80; }
+
+        /* Bagian Kanan (Form) */
+        .login-right {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .lr-badge { border: 1px solid #e0e0e0; color: var(--login-blue); font-size: 0.7rem; padding: 5px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; font-weight: bold; margin-bottom: 20px; align-self: flex-start; }
+        
+        .lr-title { font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .lr-subtitle { font-size: 0.85rem; color: #666; margin-bottom: 30px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 8px; }
+        .input-field { position: relative; }
+        .input-field i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; font-size: 0.9rem; }
+        .input-field input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; outline: none; transition: 0.2s; background: #fafafa; }
+        .input-field input:focus { border-color: var(--login-blue); background: #fff; }
+        
+        .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #999; cursor: pointer; }
+
+        .btn-login { background-color: var(--login-blue); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-login:hover { background-color: #1a4ab8; }
+        
+        .error-msg { color: red; font-size: 0.8rem; display: none; margin-top: 5px; }
+        
+        .lr-footer { text-align: center; font-size: 0.7rem; color: #999; margin-top: 30px; }
+
+        /* Jika sudah login */
+        .admin-unlocked .admin-grid { filter: blur(0); pointer-events: auto; }
+        .admin-unlocked #login-overlay { display: none; }
+
+        /* --- 4. TV DISPLAY --- */
+        .tv-wrapper { display: flex; flex-direction: column; height: calc(100vh - 130px); background: #000; color: white; border-radius: 10px; overflow: hidden; }
+        .tv-top { display: flex; height: 70%; padding: 15px; gap: 15px; background-image: linear-gradient(135deg, var(--primary-color), #002244); }
+        .tv-main-call { flex: 1; background: rgba(255,255,255,0.1); border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 2px solid rgba(255,255,255,0.2); }
+        .tv-call-title { font-size: 2vw; letter-spacing: 2px; }
+        .tv-call-number { font-size: 12vw; font-weight: bold; line-height: 1; margin: 20px 0; color: #ffeb3b; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .tv-call-loket { font-size: 2.5vw; background: rgba(0,0,0,0.4); padding: 10px 30px; border-radius: 30px; }
+        .tv-media { flex: 2; background: #000; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); }
+        .tv-media iframe { width: 100%; height: 100%; border: none; }
+        .tv-bottom { height: 30%; display: flex; padding: 15px; gap: 15px; background: #111; }
+        .tv-box { flex: 1; border-radius: 10px; display: flex; flex-direction: column; color: white; overflow: hidden; }
+        .tv-box.umum { background-color: var(--color-umum); }
+        .tv-box.khusus { background-color: var(--color-khusus); }
+        .tv-box.l3 { background-color: #8e24aa; }
+        .tv-box.l4 { background-color: #039be5; }
+        .tv-box-title { background: rgba(0,0,0,0.3); padding: 10px; text-align: center; font-size: 1.2vw; font-weight: bold; text-transform: uppercase;}
+        .tv-box-number { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 5vw; font-weight: bold; }
+        .tv-footer { background: #222; color: #ddd; padding: 10px; font-size: 1.2vw; white-space: nowrap; overflow: hidden; }
+        .running-text { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* --- PRINT STYLES --- */
+        #print-area { display: none; }
+        @media print {
+            @page { size: 58mm 100mm; margin: 0; }
+            body { background: white; }
+            body > *:not(#print-area) { display: none !important; }
+            #print-area { display: block !important; width: 55mm; margin: 0 auto; padding: 10px; font-family: 'Courier New', Courier, monospace; color: #000; text-align: center; background: white; }
+            .print-header { font-size: 14px; font-weight: bold; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase;}
+            .print-type { font-size: 12px; margin: 5px 0; }
+            .print-number { font-size: 40px; font-weight: bold; margin: 10px 0; line-height: 1; }
+            .print-footer { font-size: 10px; border-top: 1px dashed #000; padding-top: 5px; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-logo">
+            <i class="fa-solid fa-id-card"></i>
+            <div class="header-text">
+                <h1>SiTANDUK</h1>
+                <p>Disdukcapil Balut - Sistem Antrian</p>
+            </div>
+        </div>
+        <div id="clock" style="font-weight: bold;"></div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('widget')">Widget Web</button>
+        <button class="tab-btn" onclick="openTab('kiosk')">Kiosk (Cetak)</button>
+        <button class="tab-btn" onclick="openTab('tv')">TV Display</button>
+        <button class="tab-btn" id="btn-tab-admin" onclick="openTab('admin')"><i class="fa-solid fa-lock" id="admin-lock-icon"></i> Admin Loket</button>
+    </div>
+
+    <!-- 1. VIEW: WIDGET WEB -->
+    <div id="widget" class="view-container active">
+        <div class="widget-wrapper">
+            <div class="widget-header"><i class="fa-solid fa-users"></i> Antrian Pelayanan</div>
+            <div class="widget-card">
+                <div class="w-card-header umum">LOKET UMUM</div>
+                <div class="w-card-body">
+                    <div class="w-current-number" id="widget-umum-now">A0</div>
+                    <div class="w-subtitle">Antrian saat ini</div>
+                    <div class="w-divider"></div>
+                    <div class="w-stats"><span>Sisa Antrian</span> <strong id="widget-umum-waiting">0</strong></div>
+                </div>
+            </div>
+            <div class="widget-card">
+                <div class="w-card-header khusus">LOKET KHUSUS</div>
+                <div class="w-card-body">
+                    <div class="w-current-number" id="widget-khusus-now">B0</div>
+                    <div class="w-subtitle">Antrian saat ini</div>
+                    <div class="w-divider"></div>
+                    <div class="w-stats"><span>Sisa Antrian</span> <strong id="widget-khusus-waiting">0</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. VIEW: KIOSK -->
+    <div id="kiosk" class="view-container">
+        <div class="kiosk-container">
+            <h2 class="kiosk-title">Ambil Nomor Antrian</h2>
+            <button class="btn-kiosk umum" onclick="takeTicket('A')">
+                <i class="fa-solid fa-users fa-2x"></i> AMBIL ANTRIAN UMUM
+            </button>
+            <button class="btn-kiosk khusus" onclick="takeTicket('B')">
+                <i class="fa-solid fa-wheelchair fa-2x"></i> AMBIL ANTRIAN KHUSUS
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. VIEW: TV DISPLAY -->
+    <div id="tv" class="view-container" style="padding: 0;">
+        <div class="tv-wrapper">
+            <div class="tv-top">
+                <div class="tv-main-call">
+                    <div class="tv-call-title">NOMOR ANTRIAN</div>
+                    <div class="tv-call-number" id="tv-main-number">--</div>
+                    <div class="tv-call-loket" id="tv-main-loket">SILAKAN MENUJU LOKET</div>
+                </div>
+                <div class="tv-media">
+                    <iframe src="https://www.youtube.com/embed/QrJXflJKBgU?autoplay=1&mute=1&loop=1&playlist=QrJXflJKBgU" allow="autoplay"></iframe>
+                </div>
+            </div>
+            <div class="tv-bottom">
+                <div class="tv-box umum"><div class="tv-box-title">Loket 1 (Umum)</div><div class="tv-box-number" id="tv-box-l1">A0</div></div>
+                <div class="tv-box khusus"><div class="tv-box-title">Loket 2 (Khusus)</div><div class="tv-box-number" id="tv-box-l2">B0</div></div>
+                <div class="tv-box l3"><div class="tv-box-title">Loket 3 (Akta)</div><div class="tv-box-number">C0</div></div>
+                <div class="tv-box l4"><div class="tv-box-title">Loket 4 (Pengambilan)</div><div class="tv-box-number">D0</div></div>
+            </div>
+            <div class="tv-footer"><div class="running-text">SELAMAT DATANG DI DISDUKCAPIL BALUT. SIAP MELAYANI SECARA CEPAT, TEPAT, DAN AKURAT.</div></div>
+        </div>
+    </div>
+
+    <!-- 4. VIEW: ADMIN (Dengan proteksi Login SiTANDUK) -->
+    <div id="admin" class="view-container">
+        
+        <!-- KOTAK LOGIN SPLIT -->
+        <div id="login-overlay">
+            <div class="login-wrapper">
+                
+                <!-- Kiri Biru -->
+                <div class="login-left">
+                    <div class="ll-header">
+                        <i class="fa-solid fa-shield-halved fa-2x" style="color: #ffd700;"></i>
+                        <div class="ll-header-text">KAB. BANGGAI LAUT<br>Dinas Pencatatan Sipil</div>
+                    </div>
+                    
+                    <div class="ll-center">
+                        <!-- SVG Placeholder untuk Ilustrasi -->
+                        <svg class="ll-illustration" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <path d="M16 8h.01"></path>
+                            <path d="M8 8h.01"></path>
+                            <path d="M12 12c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3z"></path>
+                            <circle cx="12" cy="9" r="2"></circle>
+                        </svg>
+                        <div class="ll-title">SiTANDUK</div>
+                        <div class="ll-desc">Sistem Terpadu Administrasi Kependudukan</div>
+                        <div class="ll-badge"><i class="fa-solid fa-circle"></i> SSO Aktif</div>
+                    </div>
+                </div>
+
+                <!-- Kanan Putih -->
+                <div class="login-right">
+                    <div class="lr-badge"><i class="fa-solid fa-shield-cat"></i> SINGLE SIGN-ON</div>
+                    <div class="lr-title">Selamat Datang</div>
+                    <div class="lr-subtitle">Masuk menggunakan akun SSO Kab. Banggai Laut.</div>
+
+                    <div class="input-group">
+                        <label>NIP / Username</label>
+                        <div class="input-field">
+                            <i class="fa-solid fa-id-badge"></i>
+                            <input type="text" id="username" placeholder="Masukkan NIP (admin)" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <div class="input-field">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="password" placeholder="Masukkan password (admin123)">
+                            <i class="fa-solid fa-eye eye-icon" onclick="togglePassword()"></i>
+                        </div>
+                    </div>
+
+                    <div id="login-error" class="error-msg">Username atau Password salah!</div>
+                    
+                    <button class="btn-login" onclick="checkLogin()">
+                        <i class="fa-solid fa-right-to-bracket"></i> Masuk
+                    </button>
+
+                    <div class="lr-footer">
+                        <i class="fa-solid fa-lock" style="font-size: 0.6rem;"></i> Terproteksi · Dinas Pencatatan Sipil · Balut © 2026
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PANEL ADMIN LOKET -->
+        <div class="admin-grid">
+            <div class="admin-card umum">
+                <h3>LOKET 1 (UMUM)</h3>
+                <div class="admin-number" id="admin-umum-now">A0</div>
+                <button class="btn-call" id="btn-call-A" onclick="callNext('A', 'Loket 1')">Panggil Antrian Berikutnya</button>
+            </div>
+            <div class="admin-card khusus">
+                <h3>LOKET 2 (KHUSUS)</h3>
+                <div class="admin-number" id="admin-khusus-now">B0</div>
+                <button class="btn-call" id="btn-call-B" onclick="callNext('B', 'Loket 2')">Panggil Antrian Berikutnya</button>
+            </div>
+            
+            <!-- Tombol Aksi Bawah -->
+            <div class="admin-action-row">
+                <button class="btn-reset-admin" onclick="resetData()">Reset Semua Antrian Ke 0</button>
+                <button class="btn-logout-admin" onclick="logoutAdmin()">Logout Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AREA CETAK THERMAL -->
+    <div id="print-area">
+        <div class="print-header">
+            SiTANDUK BALUT<br>
+            Antrian Layanan
+        </div>
+        <div class="print-type" id="print-type-text">TIPE LAYANAN</div>
+        <div class="print-number" id="print-number-text">X00</div>
+        <div class="print-footer">
+            Mohon tunggu panggilan.<br>
+            <span id="print-time"></span>
+        </div>
+    </div>
+
+    <script>
+        let state = { A: { total: 0, current: 0 }, B: { total: 0, current: 0 } };
+        let isAdminLogged = false;
+        const synth = window.speechSynthesis;
+
+        // Waktu Realtime
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' });
+        }, 1000);
+
+        // Navigasi Tab
+        function openTab(tabId) {
+            document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if(tabId === 'admin') {
+                if(!isAdminLogged) {
+                    document.getElementById('admin').classList.remove('admin-unlocked');
+                } else {
+                    document.getElementById('admin').classList.add('admin-unlocked');
+                }
+            }
+        }
+
+        // Toggle Tampilkan Password
+        function togglePassword() {
+            let pInput = document.getElementById("password");
+            let pIcon = document.querySelector(".eye-icon");
+            if (pInput.type === "password") {
+                pInput.type = "text";
+                pIcon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                pInput.type = "password";
+                pIcon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+
+        // Login System
+        function checkLogin() {
+            let u = document.getElementById('username').value;
+            let p = document.getElementById('password').value;
+            let err = document.getElementById('login-error');
+
+            if(u === 'admin' && p === 'admin123') {
+                isAdminLogged = true;
+                document.getElementById('admin').classList.add('admin-unlocked');
+                document.getElementById('admin-lock-icon').classList.replace('fa-lock', 'fa-unlock');
+                err.style.display = 'none';
+                document.getElementById('password').value = ""; 
+            } else {
+                err.style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLogged = false;
+            document.getElementById('admin').classList.remove('admin-unlocked');
+            document.getElementById('admin-lock-icon').classList.replace('fa-unlock', 'fa-lock');
+            openTab('kiosk');
+        }
+        
+        document.getElementById("password").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { checkLogin(); }
+        });
+
+        // Kiosk Cetak
+        function takeTicket(type) {
+            state[type].total++;
+            let typeName = type === 'A' ? "LOKET UMUM" : "LOKET KHUSUS";
+            let number = type + state[type].total;
+
+            document.getElementById('print-type-text').innerText = typeName;
+            document.getElementById('print-number-text').innerText = number;
+            document.getElementById('print-time').innerText = new Date().toLocaleString('id-ID');
+
+            let originalTitle = document.title;
+            document.title = "Antrian_" + number;
+            window.print();
+            document.title = originalTitle;
+
+            updateUI();
+        }
+
+        // Admin Panggil
+        function callNext(type, loketName) {
+            if(!isAdminLogged) return;
+
+            if (state[type].current < state[type].total) {
+                state[type].current++;
+                let number = type + state[type].current;
+
+                document.getElementById('tv-main-number').innerText = number;
+                document.getElementById('tv-main-loket').innerText = "MENUJU " + loketName.toUpperCase();
+
+                speak(`Nomor antrian, ${type}, ${state[type].current}, silakan menuju, ${loketName}`);
+                updateUI();
+            }
+        }
+
+        function resetData() {
+            if(confirm("Apakah Anda yakin ingin mereset seluruh data antrian hari ini ke nol?")) {
+                state = { A: { total: 0, current: 0 }, B: { total: 0, current: 0 } };
+                document.getElementById('tv-main-number').innerText = "--";
+                document.getElementById('tv-main-loket').innerText = "SILAKAN MENUJU LOKET";
+                updateUI();
+                alert("Antrian berhasil direset.");
+            }
+        }
+
+        function speak(text) {
+            if (synth.speaking) { return; }
+            let utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.lang = 'id-ID';
+            utterThis.rate = 0.8;
+            synth.speak(utterThis);
+        }
+
+        function updateUI() {
+            let currentStrA = state['A'].current > 0 ? 'A' + state['A'].current : 'A0';
+            let currentStrB = state['B'].current > 0 ? 'B' + state['B'].current : 'B0';
+            let waitA = state['A'].total - state['A'].current;
+            let waitB = state['B'].total - state['B'].current;
+            
+            document.getElementById('widget-umum-now').innerText = currentStrA;
+            document.getElementById('widget-umum-waiting').innerText = waitA;
+            
+            document.getElementById('widget-khusus-now').innerText = currentStrB;
+            document.getElementById('widget-khusus-waiting').innerText = waitB;
+
+            document.getElementById('admin-umum-now').innerText = currentStrA;
+            document.getElementById('admin-khusus-now').innerText = currentStrB;
+            
+            // Logika enable/disable tombol panggil
+            let btnA = document.getElementById('btn-call-A');
+            let btnB = document.getElementById('btn-call-B');
+            
+            if(waitA === 0) { btnA.disabled = true; } else { btnA.disabled = false; }
+            if(waitB === 0) { btnB.disabled = true; } else { btnB.disabled = false; }
+
+            document.getElementById('tv-box-l1').innerText = currentStrA;
+            document.getElementById('tv-box-l2').innerText = currentStrB;
+        }
+        
+        updateUI();
+    </script>
+</body>
+</html>
